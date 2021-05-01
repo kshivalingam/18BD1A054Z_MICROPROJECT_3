@@ -4,16 +4,16 @@ const app = express();
 
 const MongoClient = require('mongodb').MongoClient
 var ObjectId = require('mongodb').ObjectId; 
-const url = 'mongodb://127.0.0.1:27017'
-const dbName = 'ShoeShop'
-let db
+const url = 'mongodb://127.0.0.1:27017';
+const dbName = 'Inventory';
+let db;
 
 MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   if (err) return console.log(err)
 
   // Storing a reference 'db' to the database so you can use it later
   db = client.db(dbName)
-  const footwearCollection = db.collection('footwear')
+  const fabricCollection = db.collection('Raymond')
   app.set('view engine', 'ejs')
 
   // Make sure you place body-parser before your CRUD handlers!
@@ -23,7 +23,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
 
   // READ
   app.get('/', (req, res) => {
-    footwearCollection.find().toArray()
+    fabricCollection.find().toArray()
     .then(results => {
         res.render('index.ejs', { details: results })
     })
@@ -32,13 +32,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   })
 
   app.post('/update', (req, res) => {
-    var o_id = new ObjectId(req.body._id); 
-    footwearCollection.findOneAndUpdate( 
+    var o_id = new ObjectId(req.body._id);
+    fabricCollection.findOneAndUpdate( 
         { _id: o_id },
         {
             $set: {
                 Category: req.body.Category,
-                Size: req.body.Size,
                 Stock: req.body.Stock,
                 Price: req.body.Price
             }
@@ -51,7 +50,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
 
   app.get('/delete/:id', (req, res) => {
     var o_id = new ObjectId(req.params.id); 
-    footwearCollection.deleteOne(
+    fabricCollection.deleteOne(
       { _id: o_id }
     )
     .then(result => {
@@ -65,7 +64,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   })
 
   app.post('/add', (req, res) => {
-    footwearCollection.insertOne(req.body)
+    fabricCollection.insertOne(req.body)
       .then(result => {
         res.redirect('/')
       })
